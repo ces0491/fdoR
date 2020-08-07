@@ -1,0 +1,42 @@
+Package: fdoR
+Title: Financial Data OpenR
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Cesaire",
+           family = "Tobias",
+           role = c("aut", "cre"),
+           email = "cesairetobias@hotmail.com",
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: Makes financial and macro data from websites and open source databases accessible in consistent and tidy dataframes.
+Depends:
+    R (>= 4.0.0),
+    magrittr,
+    rJava,
+    htmlunit
+Imports:
+    alphavantager,
+    anytime,
+    assertR,
+    countrycode,
+    dateR,
+    dplyr,
+    finreportr,
+    glue,
+    jsonlite,
+    purrr,
+    Quandl,
+    readxl,
+    RSelenium (>= 1.7.4.9000),
+    rvest (>= 0.3.2),
+    stringr,
+    tibble,
+    tidyr,
+    tidyxl,
+    xml2
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.0
+Suggests: 
+    testthat
