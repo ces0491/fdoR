@@ -65,7 +65,7 @@ scrape_legae_factor_data <- function(reqd_file, reqd_factor = c("ff3", "ff5", "c
 
 #' get factors by weight
 #'
-#' @param raw_factor_data raw data retreived from legae webiste using tidyxl
+#' @param raw_factor_data raw data retrieved from legae website using tidyxl
 #' @param weight string indicating whether to return equal or market cap weighted data
 #'
 #' @return tbl_df

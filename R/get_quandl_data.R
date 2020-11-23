@@ -3,11 +3,11 @@
 #' @param tickers character vector of tickers prefixed with Q-
 #' @param start_date start date
 #' @param end_date end date
-#' @param periodicity string indicating the periodicity - daily, weekly, monthly, quarterly, annual
+#' @param frequency string indicating the frequency - daily, weekly, monthly, quarterly, annual
 #'
 #' @return a tbl_df with cols ticker, date, variable and value
 #'
-get_quandl_data <- function(tickers, start_date, end_date, periodicity) {
+get_quandl_data <- function(tickers, start_date, end_date, frequency) {
 
   ts_data_list <- list()
 
@@ -45,7 +45,7 @@ get_quandl_data <- function(tickers, start_date, end_date, periodicity) {
 
     print(glue::glue("{progress}% complete"))
 
-    ts_period <- change_periodicity(ts_data, periodicity)
+    ts_period <- change_frequency(ts_data, frequency)
 
     ts_data_list[[tkr]] <- ts_period
   }

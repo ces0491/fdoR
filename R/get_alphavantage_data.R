@@ -2,11 +2,11 @@
 #'
 #' @param tickers a character vector of alphavantage tickers
 #' @param out_size string indicating the output size - either full or compact
-#' @param periodicity string indicating the periodicity - daily, weekly, monthly, quarterly, annual
+#' @param frequency string indicating the frequency - daily, weekly, monthly, quarterly, annual
 #'
 #' @return a list of dataframes
 #'
-pvt_retrieve_av_data <- function(tickers, out_size, periodicity) {
+pvt_retrieve_av_data <- function(tickers, out_size, frequency) {
 
   ts_data_list <- list()
 
@@ -42,7 +42,7 @@ pvt_retrieve_av_data <- function(tickers, out_size, periodicity) {
 
     ts_period <- ts_data %>%
       dplyr::rename("date" = "timestamp") %>%
-      change_periodicity(., periodicity)
+      change_frequency(., frequency)
 
     ts_data_list[[tkr]] <- ts_period
   }
@@ -55,11 +55,11 @@ pvt_retrieve_av_data <- function(tickers, out_size, periodicity) {
 #' @param tickers character vector of tickers prefixed with AV-
 #' @param start_date start date
 #' @param end_date end date
-#' @param periodicity string indicating the periodicity - daily, weekly, monthly, quarterly, annual
+#' @param frequency string indicating the frequency - daily, weekly, monthly, quarterly, annual
 #'
 #' @return a tbl_df with cols ticker, date, variable and value
 #'
-get_alphavantage_data <- function(tickers, start_date, end_date, periodicity) {
+get_alphavantage_data <- function(tickers, start_date, end_date, frequency) {
 
   # alphavantager::av_api_key(Sys.getenv("av_api_key"))
 
@@ -71,11 +71,11 @@ get_alphavantage_data <- function(tickers, start_date, end_date, periodicity) {
   }
 
   # use private data retrieval function to access alphavantage api and return list of dataframes containing ticker data
-  ts_data_list <- pvt_retrieve_av_data(tickers, out_size, periodicity)
+  ts_data_list <- pvt_retrieve_av_data(tickers, out_size, frequency)
 
   if (is.null(unlist(ts_data_list))) {
     ts_data_df <- NULL
-    warning("if you're expecting data from alphavantage, check you've used the correct ticker prefix and ticker spelling")
+    warning("If you're expecting data from alphavantage, check you've used the correct ticker prefix and ticker spelling")
   } else {
     ts_data_df <- tibble::enframe(ts_data_list, name = "ticker") %>%
       tidyr::unnest() %>%
