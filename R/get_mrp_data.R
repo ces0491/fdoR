@@ -9,7 +9,7 @@
 #'
 clean_mrp_data <- function(RawStr, country_iso, variable, period) {
 
-  # the data are returned as a single string per row of the table so we need to seperate these in to their respective columns
+  # the data are returned as a single string per row of the table so we need to separate these in to their respective columns
 
   reqd_vars <- c("Country", "Currency", "Nr of companies", "Avg\\. nr of analysts per company", "Implied cost of capital \\(ICOC\\)",
                  "Dividend yield \\(based on year t=1\\)", "Dividend growth", "Earnings yield \\(based on year t=1\\)", "Value adding earnings growth",
@@ -32,7 +32,14 @@ clean_mrp_data <- function(RawStr, country_iso, variable, period) {
   }
   var_df <- tibble::enframe(reqd_var_list) %>%
     tidyr::spread(name, value) %>%
-    tidyr::unnest()
+    tidyr::unnest(cols = c(`Avg\\. nr of analysts per company`, `Book value \\(in bn\\. local currency\\)`,
+                           Country, Currency, `Dividend forecasts \\(in bn\\. local currency\\)`,
+                           `Dividend growth`, `Dividend yield \\(based on year t=1\\)`,
+                           `Earnings forecasts \\(in bn\\. local currency\\)`, `Earnings yield \\(based on year t=1\\)`,
+                           `Implied cost of capital \\(ICOC\\)`, `Implied market risk premium \\(IMRP\\)`,
+                           `Market-to-book ratio`, `Market value \\(in bn\\. local currency\\)`,
+                           `Nr of companies`, `Price-earnings ratio`, `Risk free rate`,
+                           `Value adding earnings growth`))
 
   vars <- base::do.call(dplyr::coalesce, var_df) # merge all columns in to a single column
 
@@ -71,12 +78,14 @@ clean_mrp_data <- function(RawStr, country_iso, variable, period) {
     mrp_table
   } else {
     mrp_table <- mrp_table %>%
-      dplyr::select_("country_iso", "date", "variable", period)
+      dplyr::select(country_iso, date, variable, dplyr::all_of(period))
   }
 
+  mrp_table <- tidyr::gather(mrp_table, period, value, -country_iso, -date, -variable)
+  mrp_table
 }
 
-#' get market risk premia data
+#' get market risk premium data
 #'
 #' @param country_iso string indicating the countries to return using their 2iso codes - defaults to all available countries
 #' @param variable string indicating which variables to return - defaults to all available variables
@@ -85,25 +94,25 @@ clean_mrp_data <- function(RawStr, country_iso, variable, period) {
 #' @return df with country_iso, date, variable and period
 #' @export
 #'
-get_mrp_data <- function(country_iso = "all", variable = "all", period = "all") {
+get_risk_premia_data <- function(country_iso = "all", variable = "all", period = "all") {
 
-  remDr <- start_remote_session(url = "http://www.market-risk-premia.com/za.html")
+  pjs_conn <- webScrapeR::connect_session("http://www.market-risk-premia.com/za.html")
+  pjs_session <- pjs_conn$session
 
-  remDr$setImplicitWaitTimeout()
+  paramsElem <- pjs_session$findElement(xpath = '//*[@id="tabs"]/ul/li[3]/a')
+  paramsElem$click()
 
-  paramsElem <- remDr$findElement(using = 'xpath', value = '//*[@id="tabs"]/ul/li[3]/a')
-  paramsElem$clickElement()
+  Sys.sleep(2)
+  dropdownElem <- pjs_session$findElement(xpath = '//*[@id="myDatatable"]/thead/tr/th[1]/span/select')
+  dropdownElem$click()
 
-  dropdownElem <- remDr$findElement(using = 'xpath', value = '//*[@id="myDatatable"]/thead/tr/th[1]/span/select')
-  dropdownElem$clickElement()
+  selectElem <- pjs_session$findElement(xpath = '//*[@id="myDatatable"]/thead/tr/th[1]/span/select/option[1]')
+  selectElem$click()
 
-  selectElem <- remDr$findElement(using = 'xpath', value = '//*[@id="myDatatable"]/thead/tr/th[1]/span/select/option[1]')
-  selectElem$clickElement()
+  tableElem <- pjs_session$findElement(xpath = '//*[@id="myDatatable"]')
+  tableDataRaw <- tableElem$getText()[[1]]
 
-  tableElem <- remDr$findElement(using = 'xpath', value = '//*[@id="myDatatable"]')
-  tableDataRaw <- tableElem$getElementText()[[1]]
-
-  remDr$quit() # Delete the session & close open browsers
+  pjs_conn$pjs_process$kill() # Delete the session & close open browsers
 
   RawStr <- stringr::str_split(tableDataRaw, "\n+")[[1]]
 

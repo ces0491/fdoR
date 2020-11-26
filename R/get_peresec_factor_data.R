@@ -1,4 +1,4 @@
-#' Access SA Factor Data Library from Legae Peresec
+#' Access SA Factor Data Library from Peresec
 #'
 #' @param reqd_file string indicating the required file e.g. long_short_alsi
 #' @param reqd_factor string indicating the factors you require from the file e.g. ff3
@@ -6,12 +6,12 @@
 #'
 #' @return tbl_df returned from tidyxl
 #'
-scrape_legae_factor_data <- function(reqd_file, reqd_factor = c("ff3", "ff5", "carhart4", "aqr6"), download_directory = NULL) {
+scrape_peresec_factor_data <- function(reqd_file, reqd_factor = c("ff3", "ff5", "carhart4", "aqr6"), download_directory = NULL) {
 
-  url <- "https://www.legaeperesec.co.za"
+  url <- "https://www.peresec.com/insights/"
 
-  fractalAssert::assert_allpresent(c("long_only_alsi", "long_short_alsi", "quintile_alsi", "decile_alsi",
-                                     "long_only_constrained", "long_short_constrained", "quintile_constrained", "decile_constrained"), reqd_file)
+  assertR::assert_present(c("long_only_alsi", "long_short_alsi", "quintile_alsi", "decile_alsi",
+                            "long_only_constrained", "long_short_constrained", "quintile_constrained", "decile_constrained"), reqd_file)
 
   file_name <- switch(reqd_file,
                       long_only_alsi = "LegaePeresecLongOnlyFactorsFullALSI",
@@ -116,7 +116,7 @@ get_factors_by_weight <- function(raw_factor_data, weight = c("equal", "market_c
   ewf_data
 }
 
-#' Get Factor Data for the South African Equity Market from Legae Peresec
+#' Get Factor Data for the South African Equity Market from Peresec
 #'
 #' @param reqd_file string indicating the required file e.g. long_short_alsi
 #' @param reqd_factor string indicating the factors you require from the file e.g. ff3
@@ -126,9 +126,13 @@ get_factors_by_weight <- function(raw_factor_data, weight = c("equal", "market_c
 #' @return wide tbl_df with date and factors
 #' @export
 #'
-get_legae_factor_data <- function(reqd_file, reqd_factor = c("ff3", "ff5", "carhart4", "aqr6"), weight = c("equal", "market_cap"), download_directory = NULL) {
+get_peresec_factor_data <- function(reqd_file = c("long_only_alsi", "long_short_alsi", "quintile_alsi", "decile_alsi",
+                                                "long_only_constrained", "long_short_constrained", "quintile_constrained", "decile_constrained"),
+                                  reqd_factor = c("ff3", "ff5", "carhart4", "aqr6"),
+                                  weight = c("equal", "market_cap"),
+                                  download_directory = NULL) {
 
-  scraped_data <- scrape_legae_factor_data(reqd_file, reqd_factor, download_directory)
+  scraped_data <- scrape_peresec_factor_data(reqd_file, reqd_factor, download_directory)
 
   result <- get_factors_by_weight(scraped_data, weight)
 

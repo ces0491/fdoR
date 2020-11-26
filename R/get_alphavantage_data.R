@@ -42,7 +42,7 @@ pvt_retrieve_av_data <- function(tickers, out_size, frequency) {
 
     ts_period <- ts_data %>%
       dplyr::rename("date" = "timestamp") %>%
-      change_frequency(., frequency)
+      dateR::to_period(., frequency)
 
     ts_data_list[[tkr]] <- ts_period
   }
@@ -61,7 +61,7 @@ pvt_retrieve_av_data <- function(tickers, out_size, frequency) {
 #'
 get_alphavantage_data <- function(tickers, start_date, end_date, frequency) {
 
-  # alphavantager::av_api_key(Sys.getenv("av_api_key"))
+  alphavantager::av_api_key(Sys.getenv("av_api_key"))
 
   if (end_date - start_date <= 100) {
     out_size <- "compact"
@@ -78,7 +78,7 @@ get_alphavantage_data <- function(tickers, start_date, end_date, frequency) {
     warning("If you're expecting data from alphavantage, check you've used the correct ticker prefix and ticker spelling")
   } else {
     ts_data_df <- tibble::enframe(ts_data_list, name = "ticker") %>%
-      tidyr::unnest() %>%
+      tidyr::unnest(cols = c(value)) %>%
       dplyr::arrange(ticker, date) %>%
       tidyr::gather(variable, value, -date, -ticker) %>%
       dplyr::group_by(ticker, variable) %>%
