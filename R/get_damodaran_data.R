@@ -1,10 +1,10 @@
 #' get damodaran data
 #'
 #' @param reqd_file character vector - lookup the name of the file on the website e.g. waccGlobal
-#' @param reqd_year numeric indicating the year the dataset was produced
+#' @param reqd_year numeric indicating the year the dataset was produced, e.g. 2015
 #' @param download_directory optional string indicating directory to download files to. Defaults to C:/temp/chromeDL
 #'
-#' @return tbl
+#' @return tbl_df with columns name, year and raw_df
 #' @export
 #'
 get_damodaran_data <- function(reqd_file, reqd_year, download_directory = NULL) {
@@ -23,7 +23,7 @@ get_damodaran_data <- function(reqd_file, reqd_year, download_directory = NULL) 
 
   if (is.null(download_directory)) {
     download_dir <- "C:/temp/chromeDL/damodaran"
-    message(glue::glue("download directory defaulting to {download_dir}"))
+    message(glue::glue("download directory defaulting to temporary folder: {download_dir}"))
   } else {
     download_dir <- download_directory
   }
@@ -44,18 +44,40 @@ get_damodaran_data <- function(reqd_file, reqd_year, download_directory = NULL) 
     dplyr::mutate(link = glue::glue("{url}/{filename}")) %>%
     dplyr::mutate(year = gsub("[aA-zZ,.]", "", filename)) %>% # just get numbers
     dplyr::mutate(year = stringr::str_sub(year, -2)) %>% # get last 2 numbers only
-    dplyr::mutate(year = ifelse(year == "", yr, year)) # empty strings are the most recent - t for current data and t-1 for archived
+    dplyr::mutate(year = ifelse(year == "", yr, year)) %>%  # empty strings are the most recent - t for current data and t-1 for archived
+    dplyr::mutate(name = stringr::str_replace_all(filename, paste0(year, ".xls"), ""))
 
   download_file <- data_tbl %>%
-    dplyr::filter(year == stringr::str_sub(reqd_year, -2)) %>%
-    dplyr::filter(filename == glue::glue("{reqd_file}.xls")) %$%
+    dplyr::filter(name %in% reqd_file) %>%
+    dplyr::filter(year == stringr::str_sub(reqd_year, -2)) %$%
     link
 
-  utils::download.file(download_file, destfile = glue::glue("{download_dir}/{basename(download_file)}"), mode = "wb")
+  file_list <- list()
+  for(dfile in download_file) {
+    destfile <- glue::glue("{download_dir}/{basename(dfile)}")
+    utils::download.file(dfile, destfile, mode = "wb")
+    file_list[[dfile]] <- readxl::read_xls(destfile)
+  }
 
-  downloaded_files <- file.info(list.files(download_dir, full.names = TRUE))
-  last_download <- rownames(downloaded_files)[which.max(downloaded_files$mtime)]
+  cleanup <- function(raw_df) {
+    clean <- tidyr::drop_na(raw_df) # remove rows containing NA
+    colnames(clean) <- clean[1,] # convert first row to col names
+    clean <- clean[-1,] # remove first row
+    clean <- utils::type.convert(clean) # convert column data types
+    clean
+  }
 
-  raw_data <- readxl::read_xls(last_download)
+  file_df <- file_list %>%
+    tibble::enframe(name = "link", value = "raw_df") %>%
+    dplyr::left_join(data_tbl, by = "link") %>%
+    dplyr::mutate(clean_df = purrr::map(raw_df, cleanup)) %>%
+    dplyr::select(name, year, raw_df, clean_df)
+
+  if (is.null(download_directory)) {
+    message("clearing temporary files...")
+    fileR::clear_files("C:/temp/chromeDL/damodaran", basename(download_file))
+  }
+
+  file_df
 }
 
