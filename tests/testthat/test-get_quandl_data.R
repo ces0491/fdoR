@@ -7,11 +7,10 @@ test_that("retrieve data from Quandl", {
 
   test <- get_quandl_data(tickers, start_date, end_date, frequency)
 
-  test_file <- "expected_quandl_data.rds"
-  src_dir <- system.file("testdata", package = "fdoR")
-  src_file <- paste(src_dir, test_file, sep = "/")
-
-  expected <- readRDS(src_file)
+  expected <- tibble::tibble(ticker = c(rep("LBMA/GOLD", 3), rep("ML/AAAEY", 3)),
+                             date = as.Date(c("2020-10-06", "2020-10-13", "2020-10-20", "2020-10-06", "2020-10-13", "2020-10-20")),
+                             variable = rep("close", 6),
+                             value = c(1913.4, 1891.3, 1898.4, 1.61, 1.58, 1.65))
 
   testthat::expect_equal(test, expected)
 

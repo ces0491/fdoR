@@ -9,12 +9,12 @@ get_damodaran_data(reqd_file, reqd_year, download_directory = NULL)
 \arguments{
 \item{reqd_file}{character vector - lookup the name of the file on the website e.g. waccGlobal}
 
-\item{reqd_year}{numeric indicating the year the dataset was produced}
+\item{reqd_year}{numeric indicating the year the dataset was produced, e.g. 2015}
 
 \item{download_directory}{optional string indicating directory to download files to. Defaults to C:/temp/chromeDL}
 }
 \value{
-tbl
+tbl_df with columns name, year and raw_df
 }
 \description{
 get damodaran data

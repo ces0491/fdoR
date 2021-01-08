@@ -9,12 +9,13 @@ test_that("get equity data works as expected", {
 
   test <- get_equity_data(tickers, type, start_date, end_date, frequency)
 
-  test_file <- "expected_equity_data.rds"
-  src_dir <- system.file("testdata", package = "fdoR")
-  src_file <- paste(src_dir, test_file, sep = "/")
-
-  expected <- readRDS(src_file)
-
-  testthat::expect_equal(test, expected)
+  # because this data is only available on a rolling window, it will change month to month and year to year.
+  # we therefore can't reliably test the output so we check the returned data structure instead.
+  testthat::expect_is(test, "tbl_df")
+  testthat::expect_true(ncol(test) == 4)
+  testthat::expect_true(names(test) == c("ticker", "type", "scraped_data", "clean_data"))
+  testthat::expect_is(test$scraped_data, "list")
+  testthat::expect_is(test$clean_data, "list")
+  testthat::expect_true(nrow(test) == 8)
 
 })

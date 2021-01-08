@@ -23,7 +23,7 @@ get_damodaran_data <- function(reqd_file, reqd_year, download_directory = NULL) 
 
   if (is.null(download_directory)) {
     download_dir <- "C:/temp/chromeDL/damodaran"
-    message(glue::glue("download directory defaulting to temporary folder: {download_dir}"))
+    message(glue::glue("download directory defaulting to temporary folder: {download_dir} - temp files are removed after being loaded"))
   } else {
     download_dir <- download_directory
   }
@@ -53,10 +53,16 @@ get_damodaran_data <- function(reqd_file, reqd_year, download_directory = NULL) 
     link
 
   file_list <- list()
+
   for(dfile in download_file) {
+
     destfile <- glue::glue("{download_dir}/{basename(dfile)}")
     utils::download.file(dfile, destfile, mode = "wb")
     file_list[[dfile]] <- readxl::read_xls(destfile)
+
+    if (is.null(download_directory)) {
+      fileR::clear_files(download_dir, basename(dfile))
+    }
   }
 
   cleanup <- function(raw_df) {
@@ -72,11 +78,6 @@ get_damodaran_data <- function(reqd_file, reqd_year, download_directory = NULL) 
     dplyr::left_join(data_tbl, by = "link") %>%
     dplyr::mutate(clean_df = purrr::map(raw_df, cleanup)) %>%
     dplyr::select(name, year, raw_df, clean_df)
-
-  if (is.null(download_directory)) {
-    message("clearing temporary files...")
-    fileR::clear_files("C:/temp/chromeDL/damodaran", basename(download_file))
-  }
 
   file_df
 }

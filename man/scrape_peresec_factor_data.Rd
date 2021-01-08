@@ -6,7 +6,8 @@
 \usage{
 scrape_peresec_factor_data(
   reqd_file,
-  reqd_factor = c("ff3", "ff5", "carhart4", "aqr6"),
+  reqd_factor = c("ff3", "ff5", "carhart4", "aqr6", "peresec7lowvol",
+    "peresec7lowbeta"),
   download_directory = NULL
 )
 }
@@ -18,7 +19,7 @@ scrape_peresec_factor_data(
 \item{download_directory}{optional string indicating the download directory}
 }
 \value{
-tbl_df returned from tidyxl
+tbl_df with nested raw data returned from tidyxl
 }
 \description{
 Access SA Factor Data Library from Peresec

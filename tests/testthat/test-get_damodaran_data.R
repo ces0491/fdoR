@@ -1,6 +1,9 @@
 test_that("retrieving data from Damodaran's site works as expected", {
 
-  test_damodaran <- get_damodaran_data(reqd_file = c("EVAGlobal", "waccemerg"), reqd_year = 2018)
+  reqd_files <- c("EVAGlobal", "waccemerg")
+  yr <- 2018
+
+  test_damodaran <- get_damodaran_data(reqd_file = reqd_files, reqd_year = yr)
 
   test_file <- "expected_damodaran_data.rds"
   src_dir <- system.file("testdata", package = "fdoR")

@@ -4,7 +4,7 @@ testthat::test_that("get data for vector of countries and metrics from wgb.com w
                                    metric = c("yield_5", "cds_5"),
                                    start_date = "2020-08-20",
                                    end_date = "2020-08-25",
-                                  cfrequency = "daily",
+                                   frequency = "daily",
                                    include_forecast = FALSE)
 
   expected_sovfi_data <- tibble::tibble(country_iso = c(rep("US", 12), rep("ZA", 10)),

@@ -26,28 +26,32 @@ get_quandl_data <- function(tickers, start_date, end_date, frequency) {
       silent = FALSE)
 
     if(any(class(ts_data) == "try-error")) {
+
       ts_data <- NULL
+
+    } else {
+
+      if (colnames(ts_data)[1] == "Date" | colnames(ts_data)[1] == "DATE") {
+        colnames(ts_data)[1] <- "date"
+      }
+
+      if (ncol(ts_data) >= 4) {
+        ts_data <- ts_data %>%
+          dplyr::select(date, dplyr::starts_with('USD')) %>%
+          dplyr::select(date, dplyr::contains('PM'))
+      }
+
+      if (ncol(ts_data) == 2) {
+        colnames(ts_data)[2] <- "Value" # note capital V
+      }
+
+      ts_data <- dateR::to_period(ts_data, frequency)
+      # change_frequency(ts_data, frequency)
     }
 
-    if (colnames(ts_data)[1] == "Date" | colnames(ts_data)[1] == "DATE") {
-      colnames(ts_data)[1] <- "date"
-    }
-
-    if (ncol(ts_data) >= 4) {
-      ts_data <- ts_data %>%
-        dplyr::select(date, dplyr::starts_with('USD')) %>%
-        dplyr::select(date, dplyr::contains('PM'))
-    }
-
-    if (ncol(ts_data) == 2) {
-      colnames(ts_data)[2] <- "Value" # note capital V
-    }
+    ts_data_list[[tkr]] <- ts_data
 
     print(glue::glue("{progress}% complete"))
-
-    ts_period <- change_frequency(ts_data, frequency)
-
-    ts_data_list[[tkr]] <- ts_period
   }
 
   if(is.null(unlist(ts_data_list))) {
@@ -55,7 +59,7 @@ get_quandl_data <- function(tickers, start_date, end_date, frequency) {
     warning("check whether you've specified your quandl api key or if you've used the correct tickers")
   } else {
     ts_data_df <- tibble::enframe(ts_data_list, name = "ticker") %>%
-      tidyr::unnest() %>%
+      tidyr::unnest(cols = c(value)) %>%
       dplyr::rename(close = Value) %>%
       dplyr::arrange(ticker, date) %>%
       tidyr::gather(variable, value, -date, -ticker) %>%

@@ -7,13 +7,13 @@
 get_factors_by_weight(raw_factor_data, weight = c("equal", "market_cap"))
 }
 \arguments{
-\item{raw_factor_data}{raw data retrieved from legae website using tidyxl}
+\item{raw_factor_data}{raw data retrieved from peresec website using tidyxl}
 
 \item{weight}{string indicating whether to return equal or market cap weighted data}
 }
 \value{
-tbl_df
+tbl with cols  date, and factors e.g. Market, Size, Value, etc.
 }
 \description{
-get factors by weight
+a cleaning function applied to the raw data retrieved from Peresec
 }
