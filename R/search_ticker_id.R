@@ -1,87 +1,21 @@
-#' private function to find individual ticker names
+#' Wrapper function to companyDataScrapeR::get_ticker_id
 #'
-#' @param pjs_session remote driver object
-#' @param tkr string indicating an ISIN, CUSIP, SEDOL, or security name or part thereof
+#' @param tickers a character vector of tickers, security names or ISINs
 #'
-#' @return ticker name
-#'
-pvt_search_ticker_id <- function(pjs_session, tkr) {
-
-  #search isin
-  searchElem <- pjs_session$findElement(xpath = '//*[@id="appendedInputButton"]')
-  searchElem$click()
-  searchElem$clear()
-  searchElem$sendKeys(tkr)
-  searchElem$sendKeys(webdriver::key$enter)
-
-  #get table and extract data
-  tableElem <- pjs_session$findElement(xpath = '//*[@id="results"]')
-  Sys.sleep(2)
-  tableDataRaw <- tableElem$getText()[[1]]
-
-  RawStr <- stringr::str_split(tableDataRaw, "\n+")[[1]]
-
-  name_str <- stringr::str_replace(RawStr, pattern = tkr, replacement = "")
-
-  ticker_name <- unique(trimws(name_str, "both"))
-
-  ticker_name
-}
-
-#' find the full names of tickers given an ISIN, CUSIP, SEDOL or security name or part thereof
-#'
-#' @param tickers a character vector of tickers
-#'
-#' @return a df of tickers and their full names
+#' @return a tbl_df with columns ticker, name and isin
 #' @export
 #'
 get_ticker_names <- function(tickers) {
 
-  unq_tickers <- unique(tickers)
+  tk_list <- list()
 
-  pjs_conn <- webScrapeR::connect_session("https://www.isincodes.net/")
-  pjs_session <- pjs_conn$session
-
-  loginElem <- pjs_session$findElement(xpath  = '//*[@id="search-request"]/a/img')
-  loginElem$click()
-
-  # send username
-  userElem <- pjs_session$findElement(xpath = '//*[@id="user_login"]')
-  userElem$clear()
-  userElem$sendKeys(Sys.getenv("isin_user"))
-
-  # send password
-  passwd <- pjs_session$findElement(xpath = '//*[@id="user_pass"]')
-  passwd$clear()
-  passwd$sendKeys(Sys.getenv("isin_pass"))
-
-  # submit
-  submitElem <- pjs_session$findElement(xpath = '//*[@id="wp-submit"]')
-  submitElem$click()
-
-  # get ticker names
-  ticker_name_list <- list()
-  for (tkr in unq_tickers) {
-
-    tkr_data <- try(pvt_search_ticker_id(pjs_session, tkr), silent = TRUE)
-
-    if(class(tkr_data) == "try-error") {
-      tkr_data <- NULL
-    }
-
-    ticker_name_list[[tkr]] <- tkr_data
-
+  for(ticker in tickers) {
+    tk <- companyDataScrapeR::get_ticker_id(ticker)
+    tk_list[[ticker]] <- tk
   }
 
-  # clean up
-  ticker_data <- unlist(ticker_name_list)
+  name_nest <- tibble::enframe(tk_list)
+  result <- tidyr::unnest(name_nest[,2], cols = value)
 
-  ticker_data_df <- data.frame(ticker_data) %>%
-    dplyr::rename(full_name = ticker_data) %>%
-    dplyr::mutate(ticker = rownames(.)) %>%
-    dplyr::select(ticker, full_name)
-
-  pjs_conn$pjs_process$kill() # Delete the session & close open browsers
-
-  ticker_data_df
+  result
 }

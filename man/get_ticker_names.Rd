@@ -2,16 +2,16 @@
 % Please edit documentation in R/search_ticker_id.R
 \name{get_ticker_names}
 \alias{get_ticker_names}
-\title{find the full names of tickers given an ISIN, CUSIP, SEDOL or security name or part thereof}
+\title{Wrapper function to companyDataScrapeR::get_ticker_id}
 \usage{
 get_ticker_names(tickers)
 }
 \arguments{
-\item{tickers}{a character vector of tickers}
+\item{tickers}{a character vector of tickers, security names or ISINs}
 }
 \value{
-a df of tickers and their full names
+a tbl_df with columns ticker, name and isin
 }
 \description{
-find the full names of tickers given an ISIN, CUSIP, SEDOL or security name or part thereof
+Wrapper function to companyDataScrapeR::get_ticker_id
 }

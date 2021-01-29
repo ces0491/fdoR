@@ -1,9 +1,11 @@
 test_that("correct ticker names are returned", {
 
-  tickers <- c("ZAE000152617", "ZAE000170049")
+  tickers <- c("MSMJ", "NTCJ", "ZAE000006896")
   test_ticker_id <- get_ticker_names(tickers)
 
-  expected <- data.frame(ticker = c(tickers), full_name = c('Massmart Holdings Ltd', 'PPC Limited'))
+  expected <- tibble::tibble(ticker = c("MSMJ", "NTCJ", "SOLJ"),
+                             name = c("Massmart Holdings Ltd", "Netcare", "Sasol Ltd"),
+                             isin = c("ZAE000152617", "ZAE000011953", "ZAE000006896"))
 
   testthat::expect_equal(test_ticker_id, expected)
 })
