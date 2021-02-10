@@ -1,4 +1,5 @@
 #' Wrapper function to companyDataScrapeR::get_ticker_id
+#' This is a convenience function and shouldn't really need to be used. Names are now extracted in the meta data from calls to retrieve equity data
 #'
 #' @param tickers a character vector of tickers, security names or ISINs
 #'

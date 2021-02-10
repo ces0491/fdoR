@@ -15,7 +15,7 @@ get_quandl_data <- function(tickers, start_date, end_date, frequency) {
 
     t <- which(tickers == tkr)
     progress <- round(t/length(tickers), 2) * 100
-    print(glue::glue("attempting to retrieve {tkr} data from Quandl"))
+    print(glue::glue("Attempting to retrieve {tkr} data from Quandl"))
 
     ts_data <- try(
       Quandl::Quandl(code = tkr,
@@ -56,7 +56,7 @@ get_quandl_data <- function(tickers, start_date, end_date, frequency) {
 
   if(is.null(unlist(ts_data_list))) {
     ts_data_df <- NULL
-    warning("check whether you've specified your quandl api key or if you've used the correct tickers")
+    warning("Check whether you've specified your quandl api key or if you've used the correct tickers")
   } else {
     ts_data_df <- tibble::enframe(ts_data_list, name = "ticker") %>%
       tidyr::unnest(cols = c(value)) %>%

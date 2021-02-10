@@ -1,6 +1,6 @@
 test_that("correct ticker names are returned", {
 
-  tickers <- c("MSMJ", "NTCJ", "ZAE000006896")
+  tickers <- c("Massmart", "NTCJ", "ZAE000006896")
   test_ticker_id <- get_ticker_names(tickers)
 
   expected <- tibble::tibble(ticker = c("MSMJ", "NTCJ", "SOLJ"),

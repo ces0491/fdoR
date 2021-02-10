@@ -12,12 +12,12 @@
 #' @export
 #'
 get_macro_data <- function(tickers,
-                            start_date,
-                            end_date,
-                            frequency = c("daily", "weekly", "monthly", "quarterly", "annual"),
-                            adjusted = TRUE) {
+                           start_date,
+                           end_date,
+                           frequency = c("daily", "weekly", "monthly", "quarterly", "annual"),
+                           adjusted = TRUE) {
 
-  assertR::assert_true(all(grepl("-", tickers)), "check your tickers, it appears that you've not specified a prefix to indicate the data source")
+  assertR::assert_true(all(grepl("-", tickers)), "Check your tickers, it appears that you've not specified a prefix to indicate the data source")
 
   assertR::assert_present(c("daily", "weekly", "monthly", "quarterly", "annual"), frequency)
 

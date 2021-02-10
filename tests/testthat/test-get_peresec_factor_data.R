@@ -6,11 +6,12 @@ test_that("retrieving factor data from Peresec", {
 
   test <- get_peresec_erf_data(reqd_file, reqd_factor, weight)
 
-  test_file <- "expected_peresec_factor_data.rds"
-  src_dir <- system.file("testdata", package = "fdoR")
-  src_file <- paste(src_dir, test_file, sep = "/")
+  # these data are dynamic so we can not reliably test a fixed point set of results
 
-  expected_damodaran <- readRDS(src_file)
-
-  testthat::expect_equal(test, expected)
+  testthat::expect_s3_class(test, "tbl_df")
+  testthat::expect_setequal(names(test), c("name", "factor", "raw_data", "clean_data"))
+  testthat::expect_type(test$raw_data, "list")
+  testthat::expect_type(test$clean_data, "list")
+  testthat::expect_setequal(unique(test$name), reqd_file)
+  testthat::expect_setequal(unique(test$factor), c('Fama-French 3F', 'Fama-French 5F'))
 })

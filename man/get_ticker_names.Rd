@@ -2,7 +2,8 @@
 % Please edit documentation in R/search_ticker_id.R
 \name{get_ticker_names}
 \alias{get_ticker_names}
-\title{Wrapper function to companyDataScrapeR::get_ticker_id}
+\title{Wrapper function to companyDataScrapeR::get_ticker_id
+This is a convenience function and shouldn't really need to be used. Names are now extracted in the meta data from calls to retrieve equity data}
 \usage{
 get_ticker_names(tickers)
 }
@@ -14,4 +15,5 @@ a tbl_df with columns ticker, name and isin
 }
 \description{
 Wrapper function to companyDataScrapeR::get_ticker_id
+This is a convenience function and shouldn't really need to be used. Names are now extracted in the meta data from calls to retrieve equity data
 }

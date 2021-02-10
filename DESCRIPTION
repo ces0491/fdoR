@@ -10,13 +10,12 @@ Authors@R:
 Description: Makes financial and macro data from websites and open source databases accessible in consistent and tidy dataframes.
 Depends:
     R (>= 4.0.0),
-    magrittr,
-    rJava,
-    htmlunit
+    magrittr
 Imports:
     alphavantager,
     anytime,
     assertR,
+    companyDataScrapeR,
     countrycode,
     dateR,
     dplyr,
@@ -31,6 +30,8 @@ Imports:
     tibble,
     tidyr,
     tidyxl,
+    webScrapeR,
+    wgbDataScrapeR,
     xml2
 License: GPL-3
 Encoding: UTF-8

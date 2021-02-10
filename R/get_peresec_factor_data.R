@@ -118,7 +118,7 @@ get_factors_by_weight <- function(raw_factor_data, weight = c("equal", "market_c
   dates <- raw_fw_data %>%
     dplyr::filter(!is.na(date)) %>%
     dplyr::mutate(date = as.Date(date)) %>%
-    dplyr::mutate(date = dateUtils::get_eom_dts(date)) %>%
+    dplyr::mutate(date = dateR::get_eom_dates(date)) %>%
     dplyr::select(row, date)
 
   ewf_data <- factors %>%

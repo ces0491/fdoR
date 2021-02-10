@@ -1,6 +1,6 @@
 test_that("retrieve data from Quandl", {
 
-  tickers <- c("WFE/INDEXES_JOHANNESBURGSEFTSEJSEALLSHARE", "FRED/GDP", "ML/AAAEY", "LBMA/GOLD")
+  tickers <- c("LBMA/GOLD", "ML/AAAEY")
   start_date <- as.Date("2020-09-30")
   end_date <- as.Date("2020-10-31")
   frequency <- "weekly"
