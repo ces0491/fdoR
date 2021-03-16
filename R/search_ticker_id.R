@@ -8,15 +8,7 @@
 #'
 get_ticker_names <- function(tickers) {
 
-  tk_list <- list()
+  tk_df <- companyDataScrapeR::get_ticker_id(tickers)
 
-  for(ticker in tickers) {
-    tk <- companyDataScrapeR::get_ticker_id(ticker)
-    tk_list[[ticker]] <- tk
-  }
-
-  name_nest <- tibble::enframe(tk_list)
-  result <- tidyr::unnest(name_nest[,2], cols = value)
-
-  result
+  tk_df
 }

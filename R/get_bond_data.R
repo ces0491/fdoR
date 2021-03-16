@@ -11,7 +11,7 @@
 #' @return \code{tbl_df} with columns country iso, date, metric and value
 #' @export
 #'
-get_bond_data <- function(country_iso, metric, start_date, end_date, frequency = c('daily', 'weekly', 'monthly', 'annual'), include_forecast = FALSE) {
+get_bond_data <- function(country_iso, metric, start_date, end_date, frequency = c('daily', 'weekly', 'monthly', 'quarterly', 'annual'), include_forecast = FALSE) {
 
   bond_data <- wgbDataScrapeR::get_wgb_data(country_iso, metric, start_date, end_date, frequency, include_forecast)
 

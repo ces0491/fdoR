@@ -9,7 +9,7 @@ get_bond_data(
   metric,
   start_date,
   end_date,
-  frequency = c("daily", "weekly", "monthly", "annual"),
+  frequency = c("daily", "weekly", "monthly", "quarterly", "annual"),
   include_forecast = FALSE
 )
 }

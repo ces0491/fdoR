@@ -20,7 +20,7 @@ pvt_retrieve_av_data <- function(tickers, out_size, frequency) {
 
     t <- which(tickers == tkr)
     progress <- round(t/length(tickers), 2) * 100
-    print(glue::glue("attempting to retrieve {tkr} data from AlphaVantage"))
+    print(glue::glue("Attempting to retrieve {tkr} data from AlphaVantage"))
 
     if (identical(fx_tkr, character(0))) {
       ts_data <- try(
@@ -40,9 +40,7 @@ pvt_retrieve_av_data <- function(tickers, out_size, frequency) {
 
     print(glue::glue("{progress}% complete"))
 
-    ts_period <- ts_data %>%
-      dplyr::rename("date" = "timestamp") %>%
-      dateR::to_period(., frequency)
+    ts_period <- dateR::to_period(ts_data, frequency)
 
     ts_data_list[[tkr]] <- ts_period
   }
@@ -63,7 +61,8 @@ get_alphavantage_data <- function(tickers, start_date, end_date, frequency) {
 
   alphavantager::av_api_key(Sys.getenv("av_api_key"))
 
-  if (end_date - start_date <= 100) {
+  # sys.Date is volatile but we use it here as compact output returns the last 100 days. We only want compact if start dt - end dt is <= 100 days from today
+  if (Sys.Date() - start_date <= 100) {
     out_size <- "compact"
 
   } else {
