@@ -16,12 +16,25 @@ get_crypto_data <- function(tickers, start_date, end_date, frequency = c("daily"
   ticker_list <- list()
 
   for(ticker in tickers) {
-    crypto_data <- binancer::binance_klines(symbol = ticker,
-                                            interval = "1d",
-                                            start_time = start_date,
-                                            end_time = end_date)
 
-    assertR::assert_present(names(crypto_data), c('symbol', 'close_time', 'open', 'high', 'low', 'close', 'volume'))
+    t <- which(tickers == ticker)
+    progress <- round(t/length(tickers), 2) * 100
+    print(glue::glue("Attempting to retrieve {ticker} data from Binance"))
+
+    crypto_data <- try(
+      binancer::binance_klines(symbol = ticker,
+                               interval = "1d",
+                               start_time = start_date,
+                               end_time = end_date),
+      silent = FALSE)
+
+    if(any(class(crypto_data) == "try-error")) {
+
+      crypto_data <- NULL
+
+    } else {
+      assertR::assert_present(names(crypto_data), c('symbol', 'close_time', 'open', 'high', 'low', 'close', 'volume'))
+    }
 
     ticker_list[[ticker]] <- crypto_data
   }
@@ -41,7 +54,7 @@ get_crypto_data <- function(tickers, start_date, end_date, frequency = c("daily"
     dplyr::group_by(ticker) %>%
     dateR::to_period(., frequency) %>%
     dplyr::ungroup() %>%
-    tibble::as.tibble()
+    tibble::as_tibble()
 
   crypto_data_long
 }
