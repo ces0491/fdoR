@@ -36,6 +36,8 @@ get_crypto_data <- function(tickers, start_date, end_date, frequency = c("daily"
       assertR::assert_present(names(crypto_data), c('symbol', 'close_time', 'open', 'high', 'low', 'close', 'volume'))
     }
 
+    print(glue::glue("{progress}% complete"))
+
     ticker_list[[ticker]] <- crypto_data
   }
 
